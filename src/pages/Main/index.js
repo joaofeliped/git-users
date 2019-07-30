@@ -23,6 +23,7 @@ export default class Main extends Component {
     newUser: '',
     users: [],
     loading: false,
+    error: false,
   }
 
   async componentDidMount() {
@@ -46,26 +47,36 @@ export default class Main extends Component {
   handleAddUser = async () => {
     const { users, newUser } = this.state;
 
-    this.setState({
-      loading: true,
-    });
+    try {
+      this.setState({
+        loading: true,
+        error: false,
+      });
 
-    const response = await api.get(`/users/${newUser}`);
+      const response = await api.get(`/users/${newUser}`);
 
-    const data = {
-      name: response.data.name,
-      login: response.data.login,
-      bio: response.data.bio,
-      avatar: response.data.avatar_url,
+      const data = {
+        name: response.data.name,
+        login: response.data.login,
+        bio: response.data.bio,
+        avatar: response.data.avatar_url,
+      }
+
+      this.setState({
+        users: [... users, data],
+        newUser: '',
+        loading: false,
+      });
+    } catch(error) {
+      this.setState({
+        error: true,
+      });
+    } finally {
+      this.setState({
+        loading: false,
+      });
+      Keyboard.dismiss();
     }
-
-    this.setState({
-      users: [... users, data],
-      newUser: '',
-      loading: false,
-    });
-
-    Keyboard.dismiss();
   }
 
   handleNavigate = (user) => {
@@ -75,11 +86,11 @@ export default class Main extends Component {
   }
 
   render() {
-    const { users, newUser, loading } = this.state;
+    const { users, newUser, loading, error } = this.state;
 
     return (
       <Container>
-        <Form>
+        <Form error={error}>
           <Input autoCorrect={false} autoCaptilize="none"
             value={newUser}
             onChangeText={text => this.setState({ newUser: text })}
