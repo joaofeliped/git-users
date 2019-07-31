@@ -6,7 +6,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 
 import api from '../../services/api';
 
-import { Container, Form, Input, SubmitButton, List, User, Avatar, Name, Bio, ProfileButton, ProfileButtonText } from './styles';
+import { Container, Form, Input, SubmitButton, List, User, Avatar, Name, Bio, ProfileButton, ProfileButtonText, UserRemoveButton, UserRemoveButtonText } from './styles';
 
 export default class Main extends Component {
   static navigationOptions = {
@@ -53,9 +53,16 @@ export default class Main extends Component {
         error: false,
       });
 
+      const userAlreadyOnList = users.find(user => user.login === newUser);
+
+      if(userAlreadyOnList) {
+        throw 'User already on list';
+      }
+
       const response = await api.get(`/users/${newUser}`);
 
       const data = {
+        id: response.data.id,
         name: response.data.name,
         login: response.data.login,
         bio: response.data.bio,
@@ -85,6 +92,16 @@ export default class Main extends Component {
     navigation.navigate('User', { user });
   }
 
+  handleUserRemove = (removedUser) => {
+    const { users } = this.state;
+
+    const newUsers = users.filter(user => user.login !== removedUser.login);
+
+    this.setState({
+      users: newUsers,
+    });
+  }
+
   render() {
     const { users, newUser, loading, error } = this.state;
 
@@ -109,14 +126,19 @@ export default class Main extends Component {
           data={users}
           keyExtractor={user => user.login}
           renderItem={({ item }) => (
-            <User>
-              <Avatar source={{ uri: item.avatar }} />
-              <Name>{item.name}</Name>
-              <Bio>{item.bio}</Bio>
+              <User>
+                <UserRemoveButton onPress={() => this.handleUserRemove(item)}>
+                  <UserRemoveButtonText>
+                    X
+                  </UserRemoveButtonText>
+                </UserRemoveButton>
+                <Avatar source={{ uri: item.avatar }} />
+                <Name>{item.name}</Name>
+                <Bio>{item.bio}</Bio>
 
-              <ProfileButton onPress={() => this.handleNavigate(item)}>
-                <ProfileButtonText>Perfil</ProfileButtonText>
-              </ProfileButton>
+                <ProfileButton onPress={() => this.handleNavigate(item)}>
+                  <ProfileButtonText>Perfil</ProfileButtonText>
+                </ProfileButton>
             </User>
           )}
         />

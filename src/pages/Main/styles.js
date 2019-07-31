@@ -31,7 +31,7 @@ export const SubmitButton = styled(RectButton)`
   border-radius: 4px;
   margin-left: 10px;
   padding: 0 12px;
-  opacity: ${props => (props.loading ? 0.7 : 1)}
+  opacity: ${props => (props.loading ? 0.7 : 1)};
 `;
 
 export const List = styled.FlatList.attrs({
@@ -40,8 +40,23 @@ export const List = styled.FlatList.attrs({
   margin-top: 20px;
 `;
 
+export const UserRemoveButton = styled(RectButton)`
+  justify-content: center;
+  align-items: center;
+  border-radius: 50px;
+  background: #7159c1;
+  width: 25px;
+  height: 25px;
+  align-self: flex-end;
+`;
+
+export const UserRemoveButtonText = styled.Text`
+  color: #eee;
+`;
+
 export const User = styled.View`
   align-items: center;
+
   margin: 0 20px 30px;
 `;
 
